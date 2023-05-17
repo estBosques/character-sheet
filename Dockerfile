@@ -15,6 +15,9 @@ RUN npm install
 # Copy the application code to the container
 COPY . .
 
+EXPOSE 5174
+VOLUME [ "/app", "/app/node_modules" ]
+
 # Build the application
 # RUN npm run build
 

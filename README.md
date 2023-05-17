@@ -1,11 +1,38 @@
-# Svelte + Vite
+# create-svelte
 
-This template should help get you started developing with Svelte in Vite.
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
-The entry point for the app can be found in /src/App.svelte.
+## Creating a project
 
+If you're seeing this, you've probably already done this step. Congrats!
 
-See svelte.dev to get started with Svelte!
+```bash
+# create a new project in the current directory
+npm create svelte@latest
 
+# create a new project in my-app
+npm create svelte@latest my-app
+```
 
-The autocompletion for JavaScript/TypeScript is disabled by default because it takes up too much memory with the Svelte autocompletion. If you have a Boosted Repl or Hacker Plan, try uncommenting the lines in `.replit` (a hidden file) to re-enable it!
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
