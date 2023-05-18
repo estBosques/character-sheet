@@ -4,41 +4,28 @@
 	export let modifier: number;
 </script>
 
-<div class="ability">
-	<h2 class="title">{title}</h2>
+<div class="ability relative flex flex-col basis-1/6 border-2 rounded-lg pt-2 pb-4">
+	<h3 class="title">{title}</h3>
 	<p class="value">{value}</p>
-	<p class="modifier">{modifier}</p>
+	<span class="modifier p-1 border rounded-full">{modifier >= 0 ? '+' : ''}{modifier}</span>
 </div>
 
 <style lang="scss">
-.ability {
-	border: 1px solid black;
-	border-radius: 5px;
-	padding: 10px;
-	margin: 10px;
-	display: flex;
-	flex-direction: column;
+.ability {	
 	justify-content: space-between;
 	align-items: center;
 	text-align: center;
 
-	.title {
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
-
-	.value {
-		font-size: 2rem;
-		font-weight: bold;
-	}
-	
 	.modifier {
+		position: absolute;
+		bottom: -0.75rem;
 		font-size: 1rem;
 		font-weight: bold;
 		color: gray;
 		font-style: italic;
-		text-transform: uppercase;
-		letter-spacing: 1px;
+		background: white;
+		height: 2rem;
+		aspect-ratio: 1/1;
 	}
 }
 </style>

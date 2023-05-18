@@ -1,13 +1,10 @@
 <script lang="ts">
-  import Ability from '$lib/Ability.svelte';
-  import "../app.css"
+	import AbilitySection from '$lib/AbilitySection.svelte';
+	import '../app.scss';
 </script>
 
-<div class="abilitySection flex flex-row">
-  <Ability title={"Strength"} value={0} modifier={0} />
-  <Ability title={"Dexterity"} value={0} modifier={0} />
-  <Ability title={"Constitution"} value={0} modifier={0} />
-  <Ability title={"Intelligence"} value={0} modifier={0} />
-  <Ability title={"Wisdom"} value={0} modifier={0} />
-  <Ability title={"Charisma"} value={0} modifier={0} />
+<div class="w-full">
+	<div class="sheet w-1/2 flex">
+		<AbilitySection />
+	</div>
 </div>
