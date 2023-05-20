@@ -4,7 +4,7 @@
 </script>
 
 <div class="w-full">
-	<div class="sheet w-1/2 flex">
+	<div class="sheet container-fluid">
 		<AbilitySection />
 	</div>
 </div>
