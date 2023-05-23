@@ -89,22 +89,37 @@
 
 		const allRaces = [...sb.race, ...sb.subrace];
 
+		// find all unique sources
 		sources = allRaces.reduce((uniqueArray, obj) => {
 			const existingObj = uniqueArray.find((item) => item.source === obj.source);
 			if (!existingObj) {
 				uniqueArray.push({ source: obj.source, show: obj.source == 'PHB' });
-				console.log(uniqueArray);
 			}
 			return uniqueArray;
 		}, []);
 
+		// remove sources that don't exist in all race books
 		sources = sources
 			.map((src) => {
-				const match = books.find((book) => book.source === src.source);
+				const match = books.find((book) => book.source === src.source && book.group !== 'supplement-alt');
 				if (!match) return;
 				return { ...src, name: match.name };
 			})
 			.filter((src) => src !== undefined);
+
+		sources.sort((a, b) => {
+			const nameA = a.name.toUpperCase();
+			const nameB = b.name.toUpperCase();
+
+			if (nameA < nameB) {
+				return -1;
+			}
+			if (nameA > nameB) {
+				return 1;
+			}
+			return 0;
+		});
+		console.log("🚀 ~ file: FormBuilder.svelte:109 ~ onMount ~ sources:", sources)
 	});
 </script>
 
@@ -114,6 +129,7 @@
 		<!-- <SelectField label={'Alignment'} bind:value={formData.alignment} /> -->
 	{:else if active_step == 'Race'}
 		<RaceSelector raceList={sb.race}></RaceSelector>
+		<button class=" btn btn-link text-end pt-3" on:click={e => displayModal(e)}>Select sources</button>
 		<Modal bind:showModal>
 			{#each sources as source}
 				<div class="form-check form-switch form-check-reverse text-start">
