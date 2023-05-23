@@ -11,7 +11,7 @@
 	bind:this={dialog}
 	on:close={() => (showModal = false)}
 	on:click|self={() => dialog.close()}
-  class="col-4"
+  class="col-md-8 col-lg-6 col-xl-5"
 >
 	<div on:click|stopPropagation>
 		<slot name="header" />

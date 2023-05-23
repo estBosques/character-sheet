@@ -17,9 +17,9 @@
 <p class="form-input">
 	{#if label}
 		<div class="row">
-			<label class="label col" for>{label}:</label>
+			<label class="label col align-bottom" for>{label}:</label>
 			{#if withModal}
-				<a class="col text-end" on:click={e => displayModal(e)}>Select sources</a>
+				<button class="col btn btn-link text-end p-0" on:click={e => displayModal(e)}>Select sources</button>
 			{/if}
 		</div>
 	{/if}

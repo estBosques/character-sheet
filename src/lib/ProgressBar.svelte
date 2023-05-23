@@ -38,7 +38,7 @@
 	
 </script>
 
-<div class="progress-container" bind:this={circles}>
+<div class="progress-container mx-auto" bind:this={circles}>
 	<div class="progress" bind:this={progress}></div>
 	{#each steps as step, i}
 	<div class="circle {i == 0 ? 'active' : ''}" data-title={step} >{i+1}</div>

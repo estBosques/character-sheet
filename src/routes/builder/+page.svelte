@@ -1,7 +1,7 @@
 <script>
-	import Form from '$lib/FormBuilder.svelte';
+	import Form from '$lib/characterBuilder/FormBuilder.svelte';
 	import ProgressBar from '$lib/ProgressBar.svelte';
-  import '../../app.scss';
+  import '$src/app.scss';
 	let steps = ['Info', 'Race', 'Payment', 'Confirmation'], currentActive = 1, progressBar;
 	
 	const handleProgress = (stepIncrement) => {
@@ -10,8 +10,8 @@
 	
 </script>
 
-<main>
-	<div class="">
+<main class="container-fluid vh-100">
+	<div class="col-4">
 		<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
 		
 		<Form active_step={steps[currentActive-1]}/>
@@ -36,8 +36,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 100vh;
-		overflow: hidden;
 		margin: 0;
 	}
 
