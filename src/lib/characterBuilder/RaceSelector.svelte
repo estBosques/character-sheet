@@ -12,6 +12,15 @@
 	let modalText = '';
 	let fluff: any[] = [];
 
+	$: {
+		let sourcesToShow = sources
+			.filter((source) => source.show)
+			.map((source) => {
+				return source.source;
+			});
+		racesToShow = raceList.filter((race) => sourcesToShow.includes(race.source));
+	}
+
 	onMount(async () => {
 		// TODO: get data from api
 		const resInfo = await fetch('./src/api/fluff-races.json');
@@ -25,13 +34,6 @@
 		// 	);
 		// 	return { ...race, hasInfo: typeof hasInfo !== 'undefined' };
 		// });
-
-		let sourcesToShow = sources
-			.filter((source) => source.show)
-			.map((source) => {
-				return source.source;
-			});
-		racesToShow = raceList.filter((race) => sourcesToShow.includes(race.source));
 	});
 
 	function parseTable(entries: object) {

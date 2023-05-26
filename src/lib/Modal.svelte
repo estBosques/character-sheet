@@ -11,7 +11,7 @@
 	bind:this={dialog}
 	on:close={() => (showModal = false)}
 	on:click|self={() => dialog.close()}
-  class="col-md-8 col-lg-6 col-xl-5"
+	class="col-md-8 col-lg-6 col-xl-5"
 >
 	<div on:click|stopPropagation>
 		<slot name="header" />
@@ -19,7 +19,11 @@
 		<slot />
 		<hr />
 		<!-- svelte-ignore a11y-autofocus -->
-		<button type="button" class="btn btn-link" autofocus on:click={() => dialog.close()}>close modal</button>
+		<div class="row justify-content-end">
+			<button type="button" class="btn btn-link text-end" autofocus on:click={() => dialog.close()}>
+				close modal
+			</button>
+		</div>
 	</div>
 </dialog>
 

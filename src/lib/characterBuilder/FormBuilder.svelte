@@ -127,7 +127,7 @@
 		<InputField label={'Name'} bind:value={formData.name} />
 		<!-- <SelectField label={'Alignment'} bind:value={formData.alignment} /> -->
 	{:else if active_step == 'Race'}
-		<RaceSelector raceList={sb.race} sources={sources}></RaceSelector>
+		<RaceSelector raceList={sb.race} bind:sources></RaceSelector>
 		<button class=" btn btn-link text-end pt-3" on:click={e => showModal = true}>Select sources</button>
 		<Modal bind:showModal>
 			{#each sources as source}
