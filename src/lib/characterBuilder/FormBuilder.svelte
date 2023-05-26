@@ -3,7 +3,6 @@
 	import RaceSelector from '$lib/characterBuilder/RaceSelector.svelte';
 	import Modal from '../Modal.svelte';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import '$src/app.scss';
 
 	export let active_step;
@@ -15,7 +14,7 @@
 	};
 
 	let sb = {};
-	let sources = [];
+	let sources: any[] = [];
 	let showModal = false;
 
 	let alignments = [
@@ -119,8 +118,8 @@
 			}
 			return 0;
 		});
-		console.log("🚀 ~ file: FormBuilder.svelte:109 ~ onMount ~ sources:", sources)
 	});
+
 </script>
 
 <form class="form-container col-12" on:submit={handleSubmit}>
@@ -128,8 +127,8 @@
 		<InputField label={'Name'} bind:value={formData.name} />
 		<!-- <SelectField label={'Alignment'} bind:value={formData.alignment} /> -->
 	{:else if active_step == 'Race'}
-		<RaceSelector raceList={sb.race}></RaceSelector>
-		<button class=" btn btn-link text-end pt-3" on:click={e => displayModal(e)}>Select sources</button>
+		<RaceSelector raceList={sb.race} sources={sources}></RaceSelector>
+		<button class=" btn btn-link text-end pt-3" on:click={e => showModal = true}>Select sources</button>
 		<Modal bind:showModal>
 			{#each sources as source}
 				<div class="form-check form-switch form-check-reverse text-start">
