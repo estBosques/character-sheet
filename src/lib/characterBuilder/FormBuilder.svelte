@@ -16,7 +16,7 @@
 		alignment: ''
 	};
 
-	let sb: Races;
+	let sb: Races = { _meta: [], race: [], subrace: [] };
 	let sources: Array<Source> = [];
 	let showModal = false;
 
@@ -91,29 +91,30 @@
 
 		const allRaces = [...sb.race, ...sb.subrace];
 
-		// find all unique sources
-		let tempSources = allRaces.reduce((uniqueArray: Array<Source>, obj) => {
-			const existingObj = uniqueArray.find((item: Source) => item.source === obj.source);
+		// find all unique sources and remove source that don't exist in all books
+		let tempSources: Array<Source> = allRaces.reduce((uniqueArray: Array<Source>, obj) => {
+			const existingObj: Source | undefined = uniqueArray.find(
+				(item: Source) => item.source === obj.source
+			);
 			if (!existingObj) {
-				uniqueArray.push({ source: obj.source, show: obj.source == 'PHB' });
+				// validates that the race source has a book and the book is not a supplement
+				const match = books.find(
+					(book: Book) => obj.source === book.source && book.group !== 'supplement-alt'
+				);
+				if (match)
+					// if the source exists in the books array, push it
+					uniqueArray.push({ source: obj.source, show: obj.source === 'PHB', name: match.name });
 			}
+			// otherwise push the source
 			return uniqueArray;
 		}, []);
 
-		// remove sources that don't exist in all race books
-		tempSources.map((src) => {
-			const match = books.find(
-				(book) => book.source === src.source && book.group !== 'supplement-alt'
-			);
-			if (!match) return;
-			return { ...src, name: match.name as string };
-		});
-
+		// sort the sources
 		sources = tempSources
-			.filter((src) => src !== undefined)
-			.sort((a, b) => {
-				const nameA = a.name ? a.name.toUpperCase() : '';
-				const nameB = b.name ? b.name.toUpperCase() : '';
+			.filter((src: Source) => src !== undefined)
+			.sort((a: Source, b: Source) => {
+				const nameA: string = a.name ? a.name.toUpperCase() : '';
+				const nameB: string = b.name ? b.name.toUpperCase() : '';
 
 				if (nameA < nameB) {
 					return -1;
@@ -160,17 +161,6 @@
 		border-radius: 10px;
 		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
 		padding: 50px 20px;
-		text-align: center;
-	}
-	.submit {
-		background: linear-gradient(to bottom, #44c767 5%, #50b01c 100%);
-		background-color: #44c767;
-	}
-	.submit:hover {
-		background: linear-gradient(to bottom, #50b01c 5%, #44c767 100%);
-		background-color: #50b01c;
-	}
-	.message {
 		text-align: center;
 	}
 </style>

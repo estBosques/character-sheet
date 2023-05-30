@@ -4,10 +4,11 @@
 	import '$src/app.scss';
 
 	import type { Race } from '$src/interfaces/Race';
+	import type { Source } from '$src/interfaces/Source';
 
-	export let raceList = [{}];
-	export let sources = [{}];
-	let racesToShow : Array<Race> = [];
+	export let raceList: Array<Race> = [];
+	export let sources: Array<Source> = [];
+	let racesToShow: Array<Race> = [];
 	let showModal = false;
 	let infoRace = {};
 	let modalTitle = '';
@@ -15,12 +16,12 @@
 	let fluff: any[] = [];
 
 	$: {
-		let sourcesToShow = sources
+		let sourcesToShow: Array<string> = sources
 			.filter((source) => source.show)
 			.map((source) => {
 				return source.source;
 			});
-		racesToShow = raceList.filter((race) => sourcesToShow.includes(race.source));
+		racesToShow = raceList.filter((race: Race) => sourcesToShow.includes(race.source));
 	}
 
 	onMount(async () => {
@@ -75,7 +76,7 @@
 	}
 
 	function parseDescription(entries: any[], openTag: boolean = false) {
-		console.log("🚀 ~ file: RaceSelector.svelte:74 ~ parseDescription ~ entries:", entries)
+		console.log('🚀 ~ file: RaceSelector.svelte:74 ~ parseDescription ~ entries:', entries);
 		// go through each entry
 		entries.forEach((el: {} | String) => {
 			// if element is a string just add it as a paragraph
@@ -129,45 +130,41 @@
 	<div class="accordion" id="raceAccordion">
 		{#each racesToShow as race, idx}
 			<!-- {#if race.show} -->
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-						<button
-							type="button"
-							class="accordion-button collapsed"
-							data-bs-toggle="collapse"
-							data-bs-target="#collapse{idx}"
-							aria-expanded="false"
-							aria-controls="collapse{idx}"
-						>
-							{`${race.name} (${race.source})`}
-						</button>
-					</h2>
-					<div
-						class="accordion-collapse collapse"
-						id="collapse{idx}"
-						data-bs-parent="#raceAccordion"
+			<div class="accordion-item">
+				<h2 class="accordion-header">
+					<button
+						type="button"
+						class="accordion-button collapsed"
+						data-bs-toggle="collapse"
+						data-bs-target="#collapse{idx}"
+						aria-expanded="false"
+						aria-controls="collapse{idx}"
 					>
-						<div class="accordion-body text-start">
-							{#if !race.hasOwnProperty('_copy')}
-								{#each race.entries as entry}
-									<h3 class="h6 fw-semibold">{entry.name}</h3>
-									<p class="fw-light">{entry.entries}</p>
-								{/each}
+						{`${race.name} (${race.source})`}
+					</button>
+				</h2>
+				<div class="accordion-collapse collapse" id="collapse{idx}" data-bs-parent="#raceAccordion">
+					<div class="accordion-body text-start">
+						{#if !race.hasOwnProperty('_copy')}
+							{#each race.entries as entry}
+								<h3 class="h6 fw-semibold">{entry.name}</h3>
+								<p class="fw-light">{entry.entries}</p>
+							{/each}
+						{/if}
+						<div class="row">
+							{#if race.hasFluff}
+								<button
+									class="btn btn-link col text-start"
+									on:click={() => showMoreInfo(race.name, race.source)}
+								>
+									More info
+								</button>
 							{/if}
-							<div class="row">
-								{#if race.hasFluff}
-									<button
-										class="btn btn-link col text-start"
-										on:click={() => showMoreInfo(race.name, race.source)}
-									>
-										More info
-									</button>
-								{/if}
-								<button class="btn btn-primary col align-items-end"> Confirm </button>
-							</div>
+							<button class="btn btn-primary col align-items-end"> Confirm </button>
 						</div>
 					</div>
 				</div>
+			</div>
 			<!-- {/if} -->
 		{/each}
 	</div>

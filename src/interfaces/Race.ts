@@ -5,7 +5,7 @@
 //   "Set quicktype target language"
 
 export interface Races {
-	_meta: Meta;
+	_meta: Meta | [];
 	race: Race[];
 	subrace: Subrace[];
 }
