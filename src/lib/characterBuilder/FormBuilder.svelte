@@ -8,7 +8,7 @@
 	import type { Book } from '$src/interfaces/Book';
 	import type { Source } from '$src/interfaces/Source';
 
-	export let active_step: number;
+	export let active_step: string;
 	let formData = {
 		name: '',
 		race: {},
