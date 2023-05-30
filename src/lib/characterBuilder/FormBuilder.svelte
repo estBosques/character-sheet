@@ -4,8 +4,11 @@
 	import Modal from '../Modal.svelte';
 	import { onMount } from 'svelte';
 	import '$src/app.scss';
+	import type { Race, Races, Subrace } from '$src/interfaces/Race';
+	import type { Book } from '$src/interfaces/Book';
+	import type { Source } from '$src/interfaces/Source';
 
-	export let active_step;
+	export let active_step: number;
 	let formData = {
 		name: '',
 		race: {},
@@ -13,8 +16,8 @@
 		alignment: ''
 	};
 
-	let sb = {};
-	let sources: any[] = [];
+	let sb: Races;
+	let sources: Array<Source> = [];
 	let showModal = false;
 
 	let alignments = [
@@ -83,14 +86,14 @@
 		const resBooks = await fetch('./src/api/books.json');
 		const dataRaces = await resRaces.json();
 		const dataBooks = await resBooks.json();
-		const books = dataBooks.book;
+		const books: Book[] = dataBooks.book;
 		sb = dataRaces;
 
 		const allRaces = [...sb.race, ...sb.subrace];
 
 		// find all unique sources
-		sources = allRaces.reduce((uniqueArray, obj) => {
-			const existingObj = uniqueArray.find((item) => item.source === obj.source);
+		let tempSources = allRaces.reduce((uniqueArray: Array<Source>, obj) => {
+			const existingObj = uniqueArray.find((item: Source) => item.source === obj.source);
 			if (!existingObj) {
 				uniqueArray.push({ source: obj.source, show: obj.source == 'PHB' });
 			}
@@ -98,28 +101,29 @@
 		}, []);
 
 		// remove sources that don't exist in all race books
-		sources = sources
-			.map((src) => {
-				const match = books.find((book) => book.source === src.source && book.group !== 'supplement-alt');
-				if (!match) return;
-				return { ...src, name: match.name };
-			})
-			.filter((src) => src !== undefined);
-
-		sources.sort((a, b) => {
-			const nameA = a.name.toUpperCase();
-			const nameB = b.name.toUpperCase();
-
-			if (nameA < nameB) {
-				return -1;
-			}
-			if (nameA > nameB) {
-				return 1;
-			}
-			return 0;
+		tempSources.map((src) => {
+			const match = books.find(
+				(book) => book.source === src.source && book.group !== 'supplement-alt'
+			);
+			if (!match) return;
+			return { ...src, name: match.name as string };
 		});
-	});
 
+		sources = tempSources
+			.filter((src) => src !== undefined)
+			.sort((a, b) => {
+				const nameA = a.name ? a.name.toUpperCase() : '';
+				const nameB = b.name ? b.name.toUpperCase() : '';
+
+				if (nameA < nameB) {
+					return -1;
+				}
+				if (nameA > nameB) {
+					return 1;
+				}
+				return 0;
+			});
+	});
 </script>
 
 <form class="form-container col-12" on:submit={handleSubmit}>
@@ -127,8 +131,10 @@
 		<InputField label={'Name'} bind:value={formData.name} />
 		<!-- <SelectField label={'Alignment'} bind:value={formData.alignment} /> -->
 	{:else if active_step == 'Race'}
-		<RaceSelector raceList={sb.race} bind:sources></RaceSelector>
-		<button class=" btn btn-link text-end pt-3" on:click={e => showModal = true}>Select sources</button>
+		<RaceSelector raceList={sb.race} bind:sources />
+		<button class=" btn btn-link text-end pt-3" on:click={(e) => (showModal = true)}
+			>Select sources</button
+		>
 		<Modal bind:showModal>
 			{#each sources as source}
 				<div class="form-check form-switch form-check-reverse text-start">

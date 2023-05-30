@@ -3,9 +3,11 @@
 	import { onMount } from 'svelte';
 	import '$src/app.scss';
 
+	import type { Race } from '$src/interfaces/Race';
+
 	export let raceList = [{}];
 	export let sources = [{}];
-	let racesToShow = [];
+	let racesToShow : Array<Race> = [];
 	let showModal = false;
 	let infoRace = {};
 	let modalTitle = '';

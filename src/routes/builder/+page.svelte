@@ -2,7 +2,7 @@
 	import Form from '$lib/characterBuilder/FormBuilder.svelte';
 	import ProgressBar from '$lib/ProgressBar.svelte';
   import '$src/app.scss';
-	let steps = ['Info', 'Race', 'Payment', 'Confirmation'], currentActive = 1, progressBar;
+	let steps = ['Info', 'Race', 'Payment', 'Confirmation'], currentActive = 2, progressBar;
 	
 	const handleProgress = (stepIncrement) => {
 		progressBar.handleProgress(stepIncrement)
