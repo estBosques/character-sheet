@@ -23,7 +23,7 @@ export interface Race {
 	ability?: AbilityClass[];
 	traitTags?: string[] | null;
 	languageProficiencies?: RaceLanguageProficiency[];
-	entries?: Array<PurpleEntry | string>;
+	entries?: Array<RaceTraits | string>;
 	otherSources?: Source[];
 	reprintedAs?: string[];
 	age?: Age;
@@ -220,7 +220,7 @@ export enum ConditionImmune {
 	Poisoned = 'poisoned'
 }
 
-export interface PurpleEntry {
+export interface RaceTraits {
 	name?: string;
 	entries?: Array<FluffyEntry | string>;
 	type: ItemsType;

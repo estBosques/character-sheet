@@ -1,159 +1,162 @@
-export interface Welcome {
-    raceFluff: RaceFluff[];
+export interface FluffRaces {
+	_meta: Meta;
+	raceFluff: RaceFluff[];
+	raceFluffMeta: RaceFluffMeta;
+}
+
+export interface Meta {
+	internalCopies: string[];
 }
 
 export interface RaceFluff {
-    name:       string;
-    source:     string;
-    entries?:   Array<BaseEntry | string>;
-    images?:    Image[] | null;
-    _copy?:     Copy;
-    monstrous?: boolean;
-    uncommon?:  boolean;
+	name: string;
+	source: string;
+	entries: Entry[];
+	images?: Image[] | null;
+	_copy?: Copy;
+	monstrous?: boolean;
+	uncommon?: boolean;
 }
 
+export type Entry =
+	| BaseEntry
+	| ListEntry
+	| SectionEntry
+	| TitledEntry
+	| TableEntry
+	| QuoteEntry
+	| string;
+
 export interface Copy {
-    name:   string;
-    source: string;
-    _mod?:  Mod;
+	name: string;
+	source: string;
+	_mod?: Mod;
 }
 
 export interface Mod {
-    entries?: Entries;
-    images?:  Images;
+	entries?: Entries;
+	images?: Images;
 }
 
 export interface Entries {
-    mode:  Mode;
-    items: ItemsClass | string;
+	mode: Mode.PrependArr;
+	items: Entry | Image | string;
 }
 
-export interface ItemsClass {
-    type:    BaseEntryType;
-    entries: ItemsEntry[];
+export interface ListEntry {
+	type: EntryType;
+	style: ListStyleType;
+	items: ListItem[];
 }
 
-export interface ItemsEntry {
-    type:    FluffyType;
-    entries: Array<PurpleEntry | string>;
+export interface ListItem {
+	type: ListEntryType.Item;
+	name: string;
+	entry: string;
+	nameDot?: boolean;
 }
 
-export interface PurpleEntry {
-    type:       FluffyType;
-    style?:     Style;
-    items?:     EntryItem[];
-    caption?:   string;
-    colLabels?: string[];
-    colStyles?: ColStyle[];
-    rows?:      Array<string[]>;
-    name?:      string;
-    entries?:   Array<FluffyEntry | string>;
+export enum ListEntryType {
+	Item = 'item'
 }
 
-export enum ColStyle {
-    Col10 = "col-10",
-    Col2TextCenter = "col-2 text-center",
+export enum ListStyleType {
+	ListHangNotitle = 'list-hang-notitle'
 }
 
-export interface FluffyEntry {
-    type:  FluffyType;
-    style: Style;
-    items: EntryItem[];
-}
-
-export interface EntryItem {
-    type:     PurpleType;
-    name:     string;
-    entry:    string;
-    nameDot?: boolean;
-}
-
-export enum PurpleType {
-    Item = "item",
-}
-
-export enum Style {
-    ListHangNotitle = "list-hang-notitle",
-}
-
-export enum FluffyType {
-    Entries = "entries",
-    Inset = "inset",
-    InsetReadaloud = "insetReadaloud",
-    List = "list",
-    Quote = "quote",
-    Table = "table",
-}
-
-export enum BaseEntryType {
-    Entries = "entries",
-    Section = "section",
-    Table = "table",
+export enum EntryType {
+	Entries = 'entries',
+	Inset = 'inset',
+	InsetReadaloud = 'insetReadaloud',
+	List = 'list',
+	Quote = 'quote',
+	Table = 'table',
+	Section = 'section',
+    Image = 'image'
 }
 
 export enum Mode {
-    PrependArr = "prependArr",
+	PrependArr = 'prependArr'
 }
 
 export interface Images {
-    mode:  string;
-    items: ItemsElement[] | ItemsElement;
-}
-
-export interface ItemsElement {
-    type: ImageType;
-    href: Href;
+	mode: string;
+	items: Image[] | Image;
 }
 
 export interface Href {
-    type: HrefType;
-    path: string;
+	type: HrefType.Internal;
+	path: string;
 }
 
 export enum HrefType {
-    Internal = "internal",
+	Internal = 'internal'
 }
 
 export enum ImageType {
-    Image = "image",
+	Image = 'image'
 }
 
-export interface BaseEntry {
-    type:       BaseEntryType;
-    entries?:   Array<StickyEntry | string>;
-    caption?:   string;
-    colLabels?: string[];
-    colStyles?: string[];
-    rows?:      Array<Array<number | string>>;
-    name?:      string;
+export interface TableEntry {
+	type: EntryType.Table;
+	caption?: string;
+	colLabels: string[];
+	colStyles: string[];
+	rows: Array<Array<number | string>>;
 }
 
-export interface StickyEntry {
-    type:       FluffyType;
-    entries?:   Array<IndigoEntry | string>;
-    name?:      string;
-    caption?:   string;
-    colLabels?: string[];
-    colStyles?: ColStyle[];
-    rows?:      Array<string[]>;
+export interface SubEntry {
+	type: EntryType;
+	entries?: Array<QuoteEntry | string>;
+	name?: string;
+	caption?: string;
+	colLabels?: string[];
+	colStyles?: string[];
+	rows?: Array<string[]>;
 }
 
-export interface IndigoEntry {
-    type:       FluffyType;
-    name?:      string;
-    entries?:   Array<PurpleEntry | string>;
-    style?:     Style;
-    items?:     EntryItem[];
-    skipMarks?: boolean;
-    by?:        string;
-    caption?:   string;
-    colLabels?: string[];
-    colStyles?: ColStyle[];
-    rows?:      Array<string[]>;
+export interface QuoteEntry {
+	type: EntryType.Quote;
+	entries: string[];
+	skipMarks: boolean;
+	by: string;
 }
 
 export interface Image {
-    type:   ImageType;
-    href:   Href;
-    title?: string;
+	type: EntryType.Image;
+	href: Href;
+	title?: string;
+}
+
+export interface RaceFluffMeta {
+	uncommon: UncommonMeta;
+	monstrous: MonstrousMeta;
+}
+
+export interface MonstrousMeta {
+	name: string;
+	type: EntryType.Section;
+	entries: Entry[];
+}
+
+export interface UncommonMeta {
+    name: string;
+	type: EntryType.Inset;
+	entries: Entry[];
+}
+
+export interface TitledEntry {
+    name: string;
+    type: EntryType.Entries | EntryType.Inset;
+    entries: Entry[];
+}
+
+export interface BaseEntry {
+	type: EntryType.Entries;
+	entries: Entry[];
+}
+
+export interface SectionEntry {
+	type: EntryType.Section;
+	entries: Entry[];
 }

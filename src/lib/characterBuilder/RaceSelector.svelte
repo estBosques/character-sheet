@@ -1,19 +1,21 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
 	import { onMount } from 'svelte';
+	import parser from '$src/utils/infoParser';
 	import '$src/app.scss';
 
 	import type { Race } from '$src/interfaces/Race';
 	import type { Source } from '$src/interfaces/Source';
+	import type { BaseEntry, Entry, RaceFluff } from '$src/interfaces/Fluff';
 
 	export let raceList: Array<Race> = [];
 	export let sources: Array<Source> = [];
 	let racesToShow: Array<Race> = [];
-	let showModal = false;
-	let infoRace = {};
-	let modalTitle = '';
-	let modalText = '';
-	let fluff: any[] = [];
+	let showModal: boolean = false;
+	let infoRace: RaceFluff = {} as RaceFluff;
+	let modalTitle: string = '';
+	let modalText: string = '';
+	let raceFluff: Array<RaceFluff> = [];
 
 	$: {
 		let sourcesToShow: Array<string> = sources
@@ -29,7 +31,7 @@
 		const resInfo = await fetch('./src/api/fluff-races.json');
 		const dataInfo = await resInfo.json();
 
-		fluff = dataInfo.raceFluff;
+		raceFluff = dataInfo.raceFluff;
 
 		// raceList = raceList.map((race) => {
 		// 	let hasInfo = fluff.find(
@@ -39,90 +41,21 @@
 		// });
 	});
 
-	function parseTable(entries: object) {
-		modalText = `${modalText}<table class="table table-striped"><thead>`;
-
-		//add column labels
-		for (const i in entries.colLabels) {
-			modalText = `${modalText}<th class="${entries.colStyles[i]}">${entries.colLabels[i]}</th>`;
-		}
-		modalText = `${modalText}</thead><tbody>`;
-
-		//add rows
-		for (const row of entries.rows) {
-			modalText = `${modalText}<tr>`;
-			for (const cell of row) {
-				modalText = `${modalText}<td>${cell}</td>`;
-			}
-			modalText = `${modalText}</tr>`;
-		}
-		modalText = `${modalText}</tbody></table>`;
-	}
-
-	function parseInset(entries: any[]) {
-		modalText = `${modalText}<div class="alert alert-secondary mt-3"><p class="callout"><strong>${entries.name}</strong></p>`;
-
-		//add paragraph to callout
-		parseDescription(entries.entries);
-		modalText = `${modalText}</div>`;
-	}
-
-	function parseTextWithTitle(entries: {}) {
-		modalText = `${modalText}<div class="entry_with_title"><p class="entry_title"><strong>${entries.name}. </strong>`; // add title, let the p tag open
-
-		// add each entry as paragraph
-		parseDescription(entries.entries, true);
-		modalText = `${modalText}</div>`;
-	}
-
-	function parseDescription(entries: any[], openTag: boolean = false) {
-		console.log('🚀 ~ file: RaceSelector.svelte:74 ~ parseDescription ~ entries:', entries);
-		// go through each entry
-		entries.forEach((el: {} | String) => {
-			// if element is a string just add it as a paragraph
-			if (typeof el === 'string')
-				modalText = `${modalText}${openTag ? '' : '<p>'}${el}</p>${
-					openTag ? '<p class="subparagraph">' : ''
-				}`;
-			// if element is an object, check what type of object
-			else if (typeof el === 'object') {
-				// if it is an object check if it is an entry (aka. regular text)
-				if (el.type === 'entries' || el.type === 'section') {
-					// if it is an entry, check if it has a name (aka. title)
-					if (el.hasOwnProperty('name')) parseTextWithTitle(el);
-					// if it doesn't have a title, then you need to parse it
-					else parseDescription(el.entries);
-
-					// if it is not an entry, check if it is an inset (aka. callout)
-				} else if (el.type === 'inset') parseInset(el);
-				// if it is not an entry, check if it is a table
-				else if (el.type === 'table') parseTable(el);
-				else console.warn(`Unknown type ${el.type}`, el);
-				// TODO: Consider adding meta for uncommon races
-			}
-		});
-	}
-
 	function showMoreInfo(name: string, source: string) {
-		infoRace = fluff.find((race) => race.name === name && race.source === source) || {};
-		showModal = true;
-		modalTitle = `${infoRace.name} (${infoRace.source})`;
+		infoRace =
+			raceFluff.find((race) => race.name === name && race.source === source) || ({} as RaceFluff);
 
-		// FIXME: escape html to prevent xss
+		if (infoRace.entries) {
+			showModal = true;
+			modalTitle = `${infoRace.name} (${infoRace.source})`;
 
-		let description = infoRace.entries;
-		modalText = '';
+			// FIXME: escape html to prevent xss
 
-		// TODO: remove this
-		if (infoRace.entries.length > 1) {
-			console.warn(infoRace.entries);
+			let descriptionEntries: Entry[] = infoRace.entries;
+			modalText = '';
 
-			if (typeof infoRace.entries[0] !== 'string' && infoRace.entries[0].entries.length > 1) {
-				console.warn(infoRace.entries[0].entries);
-			}
+			modalText = parser(descriptionEntries);
 		}
-
-		parseDescription(description);
 	}
 </script>
 
@@ -145,10 +78,14 @@
 				</h2>
 				<div class="accordion-collapse collapse" id="collapse{idx}" data-bs-parent="#raceAccordion">
 					<div class="accordion-body text-start">
-						{#if !race.hasOwnProperty('_copy')}
-							{#each race.entries as entry}
-								<h3 class="h6 fw-semibold">{entry.name}</h3>
-								<p class="fw-light">{entry.entries}</p>
+						{#if !race.hasOwnProperty('_copy') && race.entries}
+							{#each race.entries as trait}
+								{#if typeof trait !== 'string'}
+									<h3 class="h6 fw-semibold">{trait.name}</h3>
+									<p class="fw-light">{trait.entries}</p>
+								{:else}
+									<p class="fw-light">{trait}</p>
+								{/if}
 							{/each}
 						{/if}
 						<div class="row">
