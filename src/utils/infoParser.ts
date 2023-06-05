@@ -1,8 +1,9 @@
 import type { Entry, TableEntry, TitledEntry } from '$src/interfaces/Fluff';
+import type { BasicTrait, TableTrait, Traits } from '$src/interfaces/Race';
 
 let text = '';
 
-function parseTable(entries: TableEntry) {
+function parseTable(entries: TableEntry | TableTrait) {
 	text = `${text}<table class="table table-striped"><thead>`;
 
 	//add column labels
@@ -22,7 +23,7 @@ function parseTable(entries: TableEntry) {
 	text = `${text}</tbody></table>`;
 }
 
-function parseInset(entries: TitledEntry) {
+function parseInset(entries: TitledEntry | BasicTrait) {
 	text = `${text}<div class="alert alert-secondary mt-3"><p class="callout"><strong>${entries.name}</strong></p>`;
 
 	//add paragraph to callout
@@ -30,7 +31,7 @@ function parseInset(entries: TitledEntry) {
 	text = `${text}</div>`;
 }
 
-function parseTextWithTitle(entries: TitledEntry) {
+function parseTextWithTitle(entries: TitledEntry | BasicTrait ) {
 	text = `${text}<div class="entry_with_title"><p class="entry_title"><strong>${entries.name}. </strong>`; // add title, let the p tag open
 
 	// add each entry as paragraph
@@ -38,9 +39,9 @@ function parseTextWithTitle(entries: TitledEntry) {
 	text = `${text}</div>`;
 }
 
-function parseDescription(entries: Entry[], openTag = false) {
+function parseDescription(entries: (Entry | Traits)[], openTag = false) {
 	// go through each entry
-	entries.forEach((el: Entry) => {
+	entries.forEach((el: Entry | Traits) => {
 		// if element is a string just add it as a paragraph
 		if (typeof el === 'string')
 			text = `${text}${openTag ? '' : '<p>'}${el}</p>${openTag ? '<p class="subparagraph">' : ''}`;
@@ -65,7 +66,7 @@ function parseDescription(entries: Entry[], openTag = false) {
 	return text;
 }
 
-function parser(entries: Entry[]): string {
+function parser(entries: (Entry | Traits)[]): string {
 	text = '';
 	parseDescription(entries);
 	return text;

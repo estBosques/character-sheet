@@ -4,7 +4,9 @@
 	import parser from '$src/utils/infoParser';
 	import '$src/app.scss';
 
-	import type { Race } from '$src/interfaces/Race';
+	import fs from 'fs';
+
+	import type { Race, Traits } from '$src/interfaces/Race';
 	import type { Source } from '$src/interfaces/Source';
 	import type { BaseEntry, Entry, RaceFluff } from '$src/interfaces/Fluff';
 
@@ -28,7 +30,7 @@
 
 	onMount(async () => {
 		// TODO: get data from api
-		const resInfo = await fetch('./src/api/fluff-races.json');
+		const resInfo = await fetch(`/api/fluff/race`);
 		const dataInfo = await resInfo.json();
 
 		raceFluff = dataInfo.raceFluff;
@@ -57,6 +59,13 @@
 			modalText = parser(descriptionEntries);
 		}
 	}
+
+	function showBasicInfo(entries: Traits[]) : string {
+		
+			// FIXME: escape html to prevent xss
+
+			return parser(entries);
+	}
 </script>
 
 <div class="race-list border border-round rounded-3">
@@ -79,25 +88,29 @@
 				<div class="accordion-collapse collapse" id="collapse{idx}" data-bs-parent="#raceAccordion">
 					<div class="accordion-body text-start">
 						{#if !race.hasOwnProperty('_copy') && race.entries}
-							{#each race.entries as trait}
+							<!-- {#each race.entries as trait}
 								{#if typeof trait !== 'string'}
 									<h3 class="h6 fw-semibold">{trait.name}</h3>
 									<p class="fw-light">{trait.entries}</p>
 								{:else}
 									<p class="fw-light">{trait}</p>
 								{/if}
-							{/each}
+							{/each} -->
+							<div class="row">
+								{@html showBasicInfo(race.entries)}
+							</div>
 						{/if}
 						<div class="row">
 							{#if race.hasFluff}
 								<button
 									class="btn btn-link col text-start"
+									type="button"
 									on:click={() => showMoreInfo(race.name, race.source)}
 								>
 									More info
 								</button>
 							{/if}
-							<button class="btn btn-primary col align-items-end"> Confirm </button>
+							<button type="button" class="btn btn-primary col align-items-end"> Confirm </button>
 						</div>
 					</div>
 				</div>
@@ -113,7 +126,7 @@
 
 <style lang="scss">
 	.race-list {
-		height: 25rem;
+		height: 35rem;
 		overflow-y: scroll;
 	}
 

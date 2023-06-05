@@ -23,7 +23,7 @@ export interface Race {
 	ability?: AbilityClass[];
 	traitTags?: string[] | null;
 	languageProficiencies?: RaceLanguageProficiency[];
-	entries?: Array<RaceTraits | string>;
+	entries?: Traits[];
 	otherSources?: Source[];
 	reprintedAs?: string[];
 	age?: Age;
@@ -73,11 +73,11 @@ export interface Entr {
 
 export interface Items {
 	name: string;
-	type: ItemsType;
+	type: EntryType;
 	entries: string[];
 }
 
-export enum ItemsType {
+export enum EntryType {
 	Entries = 'entries',
 	Inset = 'inset',
 	List = 'list',
@@ -220,12 +220,12 @@ export enum ConditionImmune {
 	Poisoned = 'poisoned'
 }
 
-export interface RaceTraits {
-	name?: string;
-	entries?: Array<FluffyEntry | string>;
-	type: ItemsType;
-	style?: Style;
-	items?: ItemClass[];
+export type Traits = BasicTrait | ListTrait | TableTrait | string;
+
+export interface BasicTrait {
+	name: string;
+	entries: Traits[];
+	type: EntryType.Entries | EntryType.Inset;
 	data?: Data;
 }
 
@@ -233,22 +233,24 @@ export interface Data {
 	overwrite: string;
 }
 
-export interface FluffyEntry {
-	type: ItemsType;
-	items?: Array<ItemClass | string>;
-	style?: Style;
-	caption?: string;
-	colLabels?: string[];
-	colStyles?: string[];
-	rows?: Array<string[]>;
-	name?: string;
-	entries?: Array<TentacledEntry | string>;
+export interface TableTrait {
+	type: EntryType.Table;
+	caption: string;
+	colLabels: string[];
+	colStyles: string[];
+	rows: string[][];
 }
 
-export interface TentacledEntry {
-	type: ItemsType;
-	style: string;
-	items: ItemClass[];
+export interface ListTrait {
+	type: EntryType.List;
+	style?: string;
+	items: (ListTraitItem | string)[];
+}
+
+export interface ListTraitItem {
+	type: ItemType.Item;
+	name: string;
+	entry: string;
 }
 
 export interface ItemClass {
@@ -514,12 +516,12 @@ export interface SubraceArmorProficiency {
 export interface StickyEntry {
 	name: string;
 	entries: Array<IndigoEntry | string>;
-	type: ItemsType;
+	type: EntryType;
 	data?: Data;
 }
 
 export interface IndigoEntry {
-	type: ItemsType;
+	type: EntryType;
 	caption?: string;
 	colLabels?: string[];
 	colStyles?: string[];
