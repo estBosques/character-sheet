@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher} from 'svelte';
 	import parser from '$src/utils/infoParser';
 	import '$src/app.scss';
 
@@ -12,12 +12,16 @@
 
 	export let raceList: Array<Race> = [];
 	export let sources: Array<Source> = [];
+
 	let racesToShow: Array<Race> = [];
 	let showModal: boolean = false;
 	let infoRace: RaceFluff = {} as RaceFluff;
 	let modalTitle: string = '';
 	let modalText: string = '';
 	let raceFluff: Array<RaceFluff> = [];
+
+
+	const dispatch = createEventDispatcher<{select: Race }>();
 
 	$: {
 		let sourcesToShow: Array<string> = sources
@@ -34,13 +38,6 @@
 		const dataInfo = await resInfo.json();
 
 		raceFluff = dataInfo.raceFluff;
-
-		// raceList = raceList.map((race) => {
-		// 	let hasInfo = fluff.find(
-		// 		(f) => f.name === race.name && f.source === race.source && f.hasOwnProperty('entries')
-		// 	);
-		// 	return { ...race, hasInfo: typeof hasInfo !== 'undefined' };
-		// });
 	});
 
 	function showMoreInfo(name: string, source: string) {
@@ -60,11 +57,14 @@
 		}
 	}
 
-	function showBasicInfo(entries: Traits[]) : string {
-		
-			// FIXME: escape html to prevent xss
+	function showBasicInfo(entries: Traits[]): string {
+		// FIXME: escape html to prevent xss
 
-			return parser(entries);
+		return parser(entries);
+	}
+
+	function selectRace(race: Race) {
+		dispatch('select', race);
 	}
 </script>
 
@@ -110,7 +110,13 @@
 									More info
 								</button>
 							{/if}
-							<button type="button" class="btn btn-primary col align-items-end"> Confirm </button>
+							<button
+								type="button"
+								class="btn btn-primary col align-items-end"
+								on:click={() => selectRace(race)}
+							>
+								Confirm
+							</button>
 						</div>
 					</div>
 				</div>

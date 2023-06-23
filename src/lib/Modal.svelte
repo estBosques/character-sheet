@@ -1,7 +1,8 @@
-<script>
-	export let showModal; // boolean
+<script lang="ts">
+	export let showModal: boolean;
+	export let hideCloseButton: boolean = false;
 
-	let dialog; // HTMLDialogElement
+	let dialog: HTMLDialogElement;
 
 	$: if (dialog && showModal) dialog.showModal();
 </script>
@@ -19,11 +20,18 @@
 		<slot />
 		<hr />
 		<!-- svelte-ignore a11y-autofocus -->
-		<div class="row justify-content-end">
-			<button type="button" class="btn btn-link text-end" autofocus on:click={() => dialog.close()}>
-				close modal
-			</button>
-		</div>
+		{#if !hideCloseButton}
+			<div class="row justify-content-end">
+				<button
+					type="button"
+					class="btn btn-link text-end"
+					autofocus
+					on:click={() => dialog.close()}
+				>
+					close modal
+				</button>
+			</div>
+		{/if}
 	</div>
 </dialog>
 

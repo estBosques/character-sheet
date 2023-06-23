@@ -4,66 +4,78 @@
 
 	import { onMount } from 'svelte';
 
-  import type { Source } from '$src/interfaces/Source';
-  import type { Book } from '$src/interfaces/Book';
-  import type { Race, Races } from '$src/interfaces/Race';
-  import type { RaceFluff } from '$src/interfaces/Fluff';
+	import type { Source } from '$src/interfaces/Source';
+	import type { Book } from '$src/interfaces/Book';
+	import type { Race, Races } from '$src/interfaces/Race';
+	import type { RaceFluff } from '$src/interfaces/Fluff';
 	import type { PageServerData } from './$types';
+	import Modal from '$lib/Modal.svelte';
+	import type { Character } from '$src/interfaces/Character';
 
 	export let data: PageServerData;
 
-  let races: Races = data.races; //{ _meta: [], race: [], subrace: [] }
+	let races: Races = data.races; //{ _meta: [], race: [], subrace: [] }
 	let sources: Source[] = data.sources;
+	let characterData: Character = data.character;
+	let selected: Race = {} as Race;
 
-	onMount(async () => {
-		// const test = await fetch(`/books`);
-		// const resRaces = await fetch('./src/api/races.json');
-		// const resBooks = await fetch('./src/api/books.json');
-		// const dataBooks = await resBooks.json();
-    // sb = await resRaces.json();
+	let showModal: boolean = false;
+	let showConfirmation: boolean = false;
 
-		// const books: Book[] = dataBooks.book;
+	function handleSelect(event: CustomEvent<Race>) {
+		selected = event.detail;
+		console.log("🚀 ~ file: +page.svelte:27 ~ handleSelect ~ selected:", selected)
+		showConfirmation = true;
+	}
 
-		// const allRaces = [...sb.race, ...sb.subrace];
-
-		// // find all unique sources and remove source that don't exist in all books
-		// let tempSources: Array<Source> = allRaces.reduce((uniqueArray: Array<Source>, obj) => {
-		// 	const existingObj: Source | undefined = uniqueArray.find(
-		// 		(item: Source) => item.source === obj.source
-		// 	);
-		// 	if (!existingObj) {
-		// 		// validates that the race source has a book and the book is not a supplement
-		// 		const match = books.find(
-		// 			(book: Book) => obj.source === book.source && book.group !== 'supplement-alt'
-		// 		);
-		// 		if (match)
-		// 			// if the source exists in the books array, push it
-		// 			uniqueArray.push({ source: obj.source, show: obj.source === 'PHB', name: match.name });
-		// 	}
-		// 	// otherwise push the source
-		// 	return uniqueArray;
-		// }, []);
-
-		// // sort the sources
-		// sources = tempSources
-		// 	.filter((src: Source) => src !== undefined)
-		// 	.sort((a: Source, b: Source) => {
-		// 		const nameA: string = a.name ? a.name.toUpperCase() : '';
-		// 		const nameB: string = b.name ? b.name.toUpperCase() : '';
-
-		// 		if (nameA < nameB) {
-		// 			return -1;
-		// 		}
-		// 		if (nameA > nameB) {
-		// 			return 1;
-		// 		}
-		// 		return 0;
-		// 	});
-	});
+	$: {
+		if (!showConfirmation) {
+			selected = {} as Race;
+		}
+	}
 </script>
 
 <main class="container-fluid min-vh-100">
 	<div class="col-6 mx-auto pt-5">
-		<RaceSelector raceList={races.race} bind:sources/>
+		<RaceSelector raceList={races.race} bind:sources on:select={handleSelect} />
+		<button class=" btn btn-link text-end pt-3" on:click={(e) => (showModal = true)}>
+			Select sources
+		</button>
 	</div>
+	<!-- Select sources modal -->
+	<Modal bind:showModal>
+		{#each sources as source}
+			<div class="form-check form-switch form-check-reverse text-start">
+				<label class="form-check-label" for={source.source}>
+					{`${source.name} (${source.source})`}
+				</label>
+				<input
+					type="checkbox"
+					id={source.source}
+					bind:checked={source.show}
+					class="form-check-input"
+					role="switch"
+				/>
+			</div>
+		{/each}
+	</Modal>
+	<!-- Confirmation modal -->
+	<Modal bind:showModal={showConfirmation} hideCloseButton>
+		<form method="post">
+			<div class="row mb-4">
+				<input type="radio" id="selectedRace" value={JSON.stringify(selected)} name="selectedRace" checked>
+				<label for="selectedRace">{selected.name}</label>
+			</div>
+			<div class="row justify-content-around">
+				<button type="submit" class="btn btn-primary col-3">Confirm</button>
+				<button type="button" class="btn btn-secondary col-3">Cancel</button>
+			</div>
+		</form>
+	</Modal>
 </main>
+
+<style lang="scss">
+	:global(input[type='radio']) {
+		visibility: hidden;
+	}
+</style>

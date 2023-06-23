@@ -5,8 +5,8 @@ import fs from 'fs'
 
 export const GET = (async () => {
 	const resRaces = await fs.promises.readFile('./src/api/races.json', 'utf-8');
-	const dataRaces = await JSON.parse(resRaces);
-	const races: Races[] = dataRaces;
+	const dataRaces: Races = await JSON.parse(resRaces);
+	const races: Races = dataRaces;
 
 	return new Response(JSON.stringify(races), {
 		status: 200
