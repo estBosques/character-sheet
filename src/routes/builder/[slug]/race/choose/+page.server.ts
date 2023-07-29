@@ -4,6 +4,7 @@ import type { Race, Races } from '$src/interfaces/Race.js';
 import type { PageServerLoad } from '../$types';
 import type { Actions } from './$types';
 import type { Character } from '$src/interfaces/Character';
+import { redirect } from '@sveltejs/kit';
 
 const CHARACTER_COOKIE = 'character-data'
 
@@ -13,7 +14,7 @@ export const load = (async ({ cookies, fetch }) => {
 	const character = data ? JSON.parse(data) : buildBaseCharacter();
 
 	// TODO: add env flag
-	console.log('[/builder/[slug]/race/choose] Loading data from cookies: ', character);
+	// console.log('[/builder/[slug]/race/choose] Loading data from cookies: ', character);
 
 	if (!character) {
 		// TODO: add env flag
@@ -38,7 +39,7 @@ export const load = (async ({ cookies, fetch }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	default: async ({ request, cookies, params }) => {
 		// fetch the data from the form
 		const data = await request.formData();
 		const race = data.get('selectedRace') as string;
@@ -51,5 +52,7 @@ export const actions: Actions = {
 		
 		// sets character cookie
 		cookies.set(CHARACTER_COOKIE, JSON.stringify(charData));
+
+		throw redirect(303, `/builder/${params.slug}/race/manage`)
 	}
 };

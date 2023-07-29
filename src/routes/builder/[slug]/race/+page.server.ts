@@ -1,6 +1,7 @@
 import { buildBaseCharacter } from '$src/utils/character';
+import type { PageServerLoad } from './$types';
 
-export async function load({ cookies }) {
+export const load = ( async ({cookies}) => {
 	// Load cookies
 	const data = cookies.get('character-data');
 	const character = data ? JSON.parse(data) : buildBaseCharacter();
@@ -18,7 +19,7 @@ export async function load({ cookies }) {
 		});
 	}
 
-  return {
-    character
-  }
-}
+	return {
+		character
+	};
+}) satisfies PageServerLoad

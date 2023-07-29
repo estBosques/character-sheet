@@ -1,7 +1,6 @@
 import type { Book } from '$src/interfaces/Book';
 import type { Races } from '$src/interfaces/Race';
 import type { Source } from '$src/interfaces/Source';
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 import fs from 'fs';
